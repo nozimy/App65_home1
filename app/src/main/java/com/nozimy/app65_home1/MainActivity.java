@@ -1,15 +1,11 @@
 package com.nozimy.app65_home1;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.Toast;
 
-import com.nozimy.app65_home1.dummy.DummyContent;
-
-public class MainActivity extends AppCompatActivity implements ItemFragment.OnListFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity  implements ItemFragment.OnListFragmentInteractionListener{
 
     public static final String DETAILS_KEY = "com.nozimy.app65_home1.DETAILS_KEY";
 
@@ -30,16 +26,12 @@ public class MainActivity extends AppCompatActivity implements ItemFragment.OnLi
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
-
-        // смотри dualPane https://developer.android.com/guide/components/fragments#Example
-
+    public void onListFragmentInteraction(String contactLookUpKey) {
         Intent mIntent = new Intent(this, DetailsActivity.class);
         Bundle mBundle = new Bundle();
-        mBundle.putString(DETAILS_KEY, item.details);
+        mBundle.putString(DETAILS_KEY, contactLookUpKey);
 
         mIntent.putExtras(mBundle);
         startActivity(mIntent);
-
     }
 }

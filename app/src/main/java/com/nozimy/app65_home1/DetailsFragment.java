@@ -1,8 +1,18 @@
 package com.nozimy.app65_home1;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.provider.ContactsContract.Data;
+
+import android.provider.ContactsContract.CommonDataKinds.Email;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.provider.ContactsContract.CommonDataKinds.StructuredName;
+
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,35 +29,49 @@ import android.widget.TextView;
  * create an instance of this fragment.
  */
 public class DetailsFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String mContactLoopUpKey;
 
     private OnDetailsFragmentInteractionListener mListener;
+    TextView nameTextView;
+    TextView emailTextView;
+    TextView phoneTextView;
+
+    private static final String[] PROJECTION =
+            {
+                    Data._ID,
+                    Data.MIMETYPE,
+                    Data.DATA1,
+                    Data.DATA2,
+                    Data.DATA3,
+                    Data.DATA4,
+                    Data.DATA5,
+                    Data.DATA6,
+                    Data.DATA7,
+                    Data.DATA8,
+                    Data.DATA9,
+                    Data.DATA10,
+                    Data.DATA11,
+                    Data.DATA12,
+                    Data.DATA13,
+                    Data.DATA14,
+                    Data.DATA15
+            };
+    private static final String SELECTION = Data.LOOKUP_KEY + " = ?";
+//    private static final String SELECTION =
+//            Data.LOOKUP_KEY + " = ?" +
+//                    " AND " +
+//                    Data.MIMETYPE + " = " +
+//                    "'" + Phone.CONTENT_ITEM_TYPE + "'";
+    private String[] mSelectionArgs = { "" };
 
     public DetailsFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment DetailsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static DetailsFragment newInstance(String param1, String param2) {
+    public static DetailsFragment newInstance(String mContactLoopUpKey) {
         DetailsFragment fragment = new DetailsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(MainActivity.DETAILS_KEY, mContactLoopUpKey);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,8 +80,7 @@ public class DetailsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mContactLoopUpKey = getArguments().getString(MainActivity.DETAILS_KEY);
         }
     }
 
@@ -66,21 +89,19 @@ public class DetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_details, container, false);
-        TextView textView = view.findViewById(R.id.details_text);
-        textView.setText(getDetailsText());
+        nameTextView = view.findViewById(R.id.details_text);
+        emailTextView = view.findViewById(R.id.email);
+        phoneTextView = view.findViewById(R.id.phone_number);
         return view;
     }
 
-    public String getDetailsText(){
-        return getArguments().getString(MainActivity.DETAILS_KEY);
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        loadContactDetails();
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onDetailsFragmentInteraction(uri);
-        }
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -99,18 +120,56 @@ public class DetailsFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    private void loadContactDetails(){
+        ContentResolver contentResolver = getActivity().getContentResolver();
+        mSelectionArgs[0] = mContactLoopUpKey;
+        Cursor mCursor = contentResolver.query(ContactsContract.Data.CONTENT_URI,
+                PROJECTION,
+                SELECTION,
+                mSelectionArgs,
+                null);
+
+        if(mCursor!=null){
+            while (mCursor.moveToNext()) {
+
+                String mime = mCursor.getString(mCursor.getColumnIndex(Data.MIMETYPE));
+
+                switch (mime){
+                    case StructuredName.CONTENT_ITEM_TYPE:
+                        String fio = "";
+                        String temp;
+
+                        temp = mCursor.getString(
+                                mCursor.getColumnIndex(StructuredName.FAMILY_NAME));
+                        fio += temp != null ? " "+temp : "";
+
+                        temp = mCursor.getString(
+                                mCursor.getColumnIndex(StructuredName.GIVEN_NAME));
+                        fio += temp != null ? " "+temp : "";
+
+                        temp = mCursor.getString(
+                                mCursor.getColumnIndex(StructuredName.MIDDLE_NAME));
+                        fio += temp != null ? " "+temp : "";
+
+                        nameTextView.setText(fio);
+                        break;
+                    case Phone.CONTENT_ITEM_TYPE:
+                        String phoneNumber = mCursor.getString(
+                                mCursor.getColumnIndex(Data.DATA1));
+                        phoneTextView.setText(phoneNumber);
+                        break;
+                    case Email.CONTENT_ITEM_TYPE:
+                        String email = mCursor.getString(
+                                mCursor.getColumnIndex(Data.DATA1));
+                        emailTextView.setText(email);
+                        break;
+                }
+            }
+            mCursor.close();
+        }
+    }
+
     public interface OnDetailsFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onDetailsFragmentInteraction(Uri uri);
     }
 }
