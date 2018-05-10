@@ -7,11 +7,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Data;
-
 import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.CommonDataKinds.StructuredName;
-
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,23 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link OnDetailsFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link DetailsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class DetailsFragment extends Fragment {
     private String mContactLoopUpKey;
-
     private OnDetailsFragmentInteractionListener mListener;
-    TextView nameTextView;
-    TextView emailTextView;
-    TextView phoneTextView;
-
+    private TextView nameTextView;
+    private TextView emailTextView;
+    private TextView phoneTextView;
     private static final String[] PROJECTION =
             {
                     Data._ID,
@@ -57,11 +44,6 @@ public class DetailsFragment extends Fragment {
                     Data.DATA15
             };
     private static final String SELECTION = Data.LOOKUP_KEY + " = ?";
-//    private static final String SELECTION =
-//            Data.LOOKUP_KEY + " = ?" +
-//                    " AND " +
-//                    Data.MIMETYPE + " = " +
-//                    "'" + Phone.CONTENT_ITEM_TYPE + "'";
     private String[] mSelectionArgs = { "" };
 
     public DetailsFragment() {
@@ -87,7 +69,6 @@ public class DetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_details, container, false);
         nameTextView = view.findViewById(R.id.details_text);
         emailTextView = view.findViewById(R.id.email);
@@ -98,10 +79,8 @@ public class DetailsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         loadContactDetails();
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -131,9 +110,7 @@ public class DetailsFragment extends Fragment {
 
         if(mCursor!=null){
             while (mCursor.moveToNext()) {
-
                 String mime = mCursor.getString(mCursor.getColumnIndex(Data.MIMETYPE));
-
                 switch (mime){
                     case StructuredName.CONTENT_ITEM_TYPE:
                         String fio = "";
