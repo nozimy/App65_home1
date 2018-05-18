@@ -14,26 +14,25 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 import java.util.ArrayList;
 
 import static com.nozimy.app65_home1.MainActivity.DETAILS_KEY;
 
-public class ItemFragment extends Fragment {
+public class ItemFragment extends Fragment implements OnListFragmentInteractionListener{
 
     boolean mDualPane;
     String mCurLookUpKey;
     int mCurCheckPosition;
 
     private static final int REQUEST_CODE_READ_CONTACTS=1;
-    private static boolean READ_CONTACTS_GRANTED = false;
-    ListView contactList;
+    private boolean READ_CONTACTS_GRANTED = false;
+    RecyclerView contactList;
     ArrayList<ContactItemInList> contacts = new ArrayList<ContactItemInList>();
     private OnListFragmentInteractionListener mListener;
 
@@ -41,32 +40,12 @@ public class ItemFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item_list, container, false);
-        contactList = (ListView) view.findViewById(R.id.list_unique);
-        contactList.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                showDetails(position);
-            }
-        });
+        Context context = view.getContext();
+        contactList = (RecyclerView) view.findViewById(R.id.list_unique);
+        contactList.setLayoutManager(new LinearLayoutManager(context));
         return view;
     }
 
@@ -92,8 +71,6 @@ public class ItemFragment extends Fragment {
                 mCurCheckPosition = savedInstanceState.getInt("curChoice", 0);
             }
             if (mDualPane) {
-                // In dual-pane mode, the list view highlights the selected item.
-                contactList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
                 // Make sure our UI is in the correct state.
                 showDetails(mCurCheckPosition);
             }
@@ -135,18 +112,19 @@ public class ItemFragment extends Fragment {
         ContentResolver contentResolver = getActivity().getContentResolver();
         Cursor mCursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
         if(mCursor!=null){
-            while (mCursor.moveToNext()) {
-                String contactName = mCursor.getString(
-                        mCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
-                String lookUpKey = mCursor.getString(
-                        mCursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-                contacts.add(new ContactItemInList(lookUpKey, contactName));
+            try{
+                while (mCursor.moveToNext()) {
+                    String contactName = mCursor.getString(
+                            mCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
+                    String lookUpKey = mCursor.getString(
+                            mCursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+                    contacts.add(new ContactItemInList(lookUpKey, contactName));
+                }
+            } finally {
+                mCursor.close();
             }
-            mCursor.close();
         }
-        ArrayAdapter<ContactItemInList> adapter = new ArrayAdapter<ContactItemInList>(getActivity(),
-                R.layout.fragment_item, contacts);
-        contactList.setAdapter(adapter);
+        contactList.setAdapter(new RecyclerViewAdapter(contacts, this));
     }
 
     void showDetails(int index) {
@@ -156,7 +134,6 @@ public class ItemFragment extends Fragment {
         DetailsFragment details = (DetailsFragment)
                 getFragmentManager().findFragmentById(R.id.fragment_container);
         if (mDualPane) {
-            contactList.setItemChecked(index, true);
             if (details == null || !mCurLookUpKey.equals(details.getShownLookUpKey())) {
                 // Make new fragment to show this selection.
                 details = DetailsFragment.newInstance(mCurLookUpKey);
@@ -164,11 +141,7 @@ public class ItemFragment extends Fragment {
                 // Execute a transaction, replacing any existing fragment
                 // with this one inside the frame.
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
-//                if (index == 0) {
-                    ft.replace(R.id.fragment_container, details);
-//                } else {
-//                    ft.replace(R.id.a_item, details);
-//                }
+                ft.replace(R.id.fragment_container, details);
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 ft.commit();
             }
@@ -178,13 +151,13 @@ public class ItemFragment extends Fragment {
             mBundle.putString(DETAILS_KEY, mCurLookUpKey);
             mIntent.putExtras(mBundle);
             startActivity(mIntent);
-//            mListener.onListFragmentInteraction(mCurLookUpKey);
         }
 
     }
 
-    public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(String contactLookUpKey);
+    @Override
+    public void onListFragmentInteraction(int position) {
+        showDetails(position);
     }
-
 }
+

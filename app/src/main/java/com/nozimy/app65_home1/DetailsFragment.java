@@ -1,7 +1,9 @@
 package com.nozimy.app65_home1;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,14 +12,22 @@ import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.CommonDataKinds.StructuredName;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class DetailsFragment extends Fragment {
+
+    private static final int REQUEST_CODE_READ_CONTACTS=1;
+    private boolean READ_CONTACTS_GRANTED = false;
+
     private String mContactLoopUpKey;
 //    private OnDetailsFragmentInteractionListener mListener;
     private TextView nameTextView;
@@ -88,7 +98,18 @@ public class DetailsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        loadContactDetails();
+
+        int hasReadContactPermission = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS);
+
+        if(hasReadContactPermission == PackageManager.PERMISSION_GRANTED){
+            READ_CONTACTS_GRANTED = true;
+        } else{
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CODE_READ_CONTACTS);
+        }
+
+        if (READ_CONTACTS_GRANTED){
+            loadContactDetails();
+        }
     }
 
     @Override
@@ -106,6 +127,24 @@ public class DetailsFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
 //        mListener = null;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode){
+            case REQUEST_CODE_READ_CONTACTS:
+                if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    READ_CONTACTS_GRANTED = true;
+                }
+        }
+        if(READ_CONTACTS_GRANTED){
+            loadContactDetails();
+        }
+        else{
+            Toast.makeText(getActivity(), "Требуется установить разрешения", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void loadContactDetails(){
