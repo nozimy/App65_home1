@@ -3,13 +3,16 @@ package com.nozimy.app65_home1;
 import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +23,13 @@ import android.widget.ListView;
 import android.widget.Toast;
 import java.util.ArrayList;
 
+import static com.nozimy.app65_home1.MainActivity.DETAILS_KEY;
+
 public class ItemFragment extends Fragment {
+
+    boolean mDualPane;
+    String mCurLookUpKey;
+    int mCurCheckPosition;
 
     private static final int REQUEST_CODE_READ_CONTACTS=1;
     private static boolean READ_CONTACTS_GRANTED = false;
@@ -55,7 +64,7 @@ public class ItemFragment extends Fragment {
         contactList.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mListener.onListFragmentInteraction(contacts.get(position).lookUpKey);
+                showDetails(position);
             }
         });
         return view;
@@ -75,6 +84,19 @@ public class ItemFragment extends Fragment {
 
         if (READ_CONTACTS_GRANTED){
             loadContacts();
+
+            View detailsFrame = getActivity().findViewById(R.id.fragment_container);
+            mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
+            if (savedInstanceState != null) {
+                // Restore last state for checked position.
+                mCurCheckPosition = savedInstanceState.getInt("curChoice", 0);
+            }
+            if (mDualPane) {
+                // In dual-pane mode, the list view highlights the selected item.
+                contactList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+                // Make sure our UI is in the correct state.
+                showDetails(mCurCheckPosition);
+            }
         }
     }
 
@@ -103,6 +125,12 @@ public class ItemFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("curChoice", mCurCheckPosition);
+    }
+
     private void loadContacts(){
         ContentResolver contentResolver = getActivity().getContentResolver();
         Cursor mCursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
@@ -119,6 +147,40 @@ public class ItemFragment extends Fragment {
         ArrayAdapter<ContactItemInList> adapter = new ArrayAdapter<ContactItemInList>(getActivity(),
                 R.layout.fragment_item, contacts);
         contactList.setAdapter(adapter);
+    }
+
+    void showDetails(int index) {
+        mCurCheckPosition = index;
+        mCurLookUpKey = contacts.get(index).lookUpKey;
+
+        DetailsFragment details = (DetailsFragment)
+                getFragmentManager().findFragmentById(R.id.fragment_container);
+        if (mDualPane) {
+            contactList.setItemChecked(index, true);
+            if (details == null || !mCurLookUpKey.equals(details.getShownLookUpKey())) {
+                // Make new fragment to show this selection.
+                details = DetailsFragment.newInstance(mCurLookUpKey);
+
+                // Execute a transaction, replacing any existing fragment
+                // with this one inside the frame.
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+//                if (index == 0) {
+                    ft.replace(R.id.fragment_container, details);
+//                } else {
+//                    ft.replace(R.id.a_item, details);
+//                }
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                ft.commit();
+            }
+        } else {
+            Intent mIntent = new Intent(getActivity(), DetailsActivity.class);
+            Bundle mBundle = new Bundle();
+            mBundle.putString(DETAILS_KEY, mCurLookUpKey);
+            mIntent.putExtras(mBundle);
+            startActivity(mIntent);
+//            mListener.onListFragmentInteraction(mCurLookUpKey);
+        }
+
     }
 
     public interface OnListFragmentInteractionListener {

@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 public class DetailsFragment extends Fragment {
     private String mContactLoopUpKey;
-    private OnDetailsFragmentInteractionListener mListener;
+//    private OnDetailsFragmentInteractionListener mListener;
     private TextView nameTextView;
     private TextView emailTextView;
     private TextView phoneTextView;
@@ -58,6 +58,10 @@ public class DetailsFragment extends Fragment {
         return fragment;
     }
 
+    public String getShownLookUpKey() {
+        return getArguments().getString(MainActivity.DETAILS_KEY);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +73,11 @@ public class DetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+//        if (container == null) {
+//            return null;
+//        }
+
         View view = inflater.inflate(R.layout.fragment_details, container, false);
         nameTextView = view.findViewById(R.id.details_text);
         emailTextView = view.findViewById(R.id.email);
@@ -85,18 +94,18 @@ public class DetailsFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnDetailsFragmentInteractionListener) {
-            mListener = (OnDetailsFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnDetailsFragmentInteractionListener");
-        }
+//        if (context instanceof OnDetailsFragmentInteractionListener) {
+//            mListener = (OnDetailsFragmentInteractionListener) context;
+//        } else {
+//            throw new RuntimeException(context.toString()
+//                    + " must implement OnDetailsFragmentInteractionListener");
+//        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+//        mListener = null;
     }
 
     private void loadContactDetails(){
