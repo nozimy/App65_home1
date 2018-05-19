@@ -1,12 +1,11 @@
-package com.nozimy.app65_home1;
+package com.nozimy.app65_home1.ui.listing;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class MainActivity extends AppCompatActivity {
+import com.nozimy.app65_home1.R;
 
-    public static final String DETAILS_KEY = "com.nozimy.app65_home1.DETAILS_KEY";
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

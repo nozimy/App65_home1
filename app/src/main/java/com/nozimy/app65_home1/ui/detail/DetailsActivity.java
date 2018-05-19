@@ -1,12 +1,13 @@
-package com.nozimy.app65_home1;
+package com.nozimy.app65_home1.ui.detail;
 
 
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class DetailsActivity extends AppCompatActivity implements DetailsFragment.OnDetailsFragmentInteractionListener{
+import com.nozimy.app65_home1.R;
+
+public class DetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +28,4 @@ public class DetailsActivity extends AppCompatActivity implements DetailsFragmen
         }
     }
 
-    @Override
-    public void onDetailsFragmentInteraction(Uri uri) {
-    }
 }

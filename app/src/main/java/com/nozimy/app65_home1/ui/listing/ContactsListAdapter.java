@@ -1,20 +1,22 @@
-package com.nozimy.app65_home1;
+package com.nozimy.app65_home1.ui.listing;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.nozimy.app65_home1.data.entities.Contact;
+import com.nozimy.app65_home1.R;
+
 import java.util.List;
 
-public class RecyclerViewAdapter  extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
-    private final List<ContactItemInList> items;
+public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListAdapter.ViewHolder>{
+    private final List<Contact> items;
     private final OnListFragmentInteractionListener listener;
 
-    public RecyclerViewAdapter(List<ContactItemInList> items, OnListFragmentInteractionListener listener){
+    public ContactsListAdapter(List<Contact> items, OnListFragmentInteractionListener listener){
         this.items = items;
         this.listener = listener;
     }
@@ -48,7 +50,7 @@ public class RecyclerViewAdapter  extends RecyclerView.Adapter<RecyclerViewAdapt
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View containerView;
         public final TextView contentTextView;
-        public ContactItemInList item;
+        public Contact item;
 
         public ViewHolder(View view) {
             super(view);

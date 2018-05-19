@@ -5,11 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:visibility="visible"
-    tools:context=".MainActivity">
+    tools:context=".ui.listing.MainActivity">
 
     <fragment
         android:id="@+id/fragment"
-        android:name="com.nozimy.app65_home1.ItemFragment"
+        android:name="com.nozimy.app65_home1.ui.listing.ContactsListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

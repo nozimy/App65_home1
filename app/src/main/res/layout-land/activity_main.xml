@@ -5,7 +5,7 @@
 
     <fragment
         android:id="@+id/fragment"
-        android:name="com.nozimy.app65_home1.ItemFragment"
+        android:name="com.nozimy.app65_home1.ui.listing.ContactsListFragment"
         android:layout_height="match_parent"
         android:layout_width="0dp"
         android:layout_weight="1"/>
