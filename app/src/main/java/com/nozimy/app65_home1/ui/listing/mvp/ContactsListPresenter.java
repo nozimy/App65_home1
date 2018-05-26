@@ -3,7 +3,8 @@ package com.nozimy.app65_home1.ui.listing.mvp;
 import android.Manifest;
 import android.support.v4.app.ActivityCompat;
 
-import com.nozimy.app65_home1.data.DataManager;
+import com.nozimy.app65_home1.DataRepository;
+import com.nozimy.app65_home1.ImportService;
 import com.nozimy.app65_home1.ui.common.mvp.BasePresenter;
 import com.nozimy.app65_home1.utils.CommonUtils;
 
@@ -13,12 +14,21 @@ public class ContactsListPresenter<V extends ContactsListMvpView> extends BasePr
 
     private String curLookUpKey;
 
-    public ContactsListPresenter(DataManager dm) {
-        super(dm);
+    private ImportService importService;
+
+    public ContactsListPresenter(DataRepository repository, ImportService service) {
+        super(repository);
+
+        importService = service;
     }
 
     public void load(){
-        getMvpView().setContacts(getDataManager().getContacts());
+
+        getDataRepository().importFromProvider(importService);
+
+        //todo: Если не импортированы, то импортировать данные из контакт-провайдера в БД.
+
+//        getMvpView().setContacts(getDataRepository().getContacts());
     }
 
     @Override
@@ -52,7 +62,7 @@ public class ContactsListPresenter<V extends ContactsListMvpView> extends BasePr
 
     @Override
     public void showDetails(int position) {
-        curLookUpKey = getDataManager().getContacts().get(position).lookUpKey;
+//        curLookUpKey = getDataManager().getContacts().get(position).lookUpKey;
 
         if (getMvpView().isDualPane()) {
             if (getMvpView().getDetailsFragment() == null || !curLookUpKey.equals(getMvpView().getDetailsFragment().getShownLookUpKey())) {

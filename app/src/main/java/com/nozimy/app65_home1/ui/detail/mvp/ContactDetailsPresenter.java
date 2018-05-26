@@ -3,7 +3,7 @@ package com.nozimy.app65_home1.ui.detail.mvp;
 import android.Manifest;
 import android.support.v4.app.ActivityCompat;
 
-import com.nozimy.app65_home1.data.DataManager;
+import com.nozimy.app65_home1.DataRepository;
 import com.nozimy.app65_home1.ui.common.mvp.BasePresenter;
 import com.nozimy.app65_home1.utils.CommonUtils;
 
@@ -11,13 +11,13 @@ public class ContactDetailsPresenter<V extends ContactDetailsContract.View> exte
 
     private static final int REQUEST_CODE_READ_CONTACTS=1;
 
-    public ContactDetailsPresenter(DataManager dm) {
-        super(dm);
+    public ContactDetailsPresenter(DataRepository repository) {
+        super(repository);
     }
 
     @Override
     public void loadDetails(String lookUpKey) {
-        getMvpView().setDetails(getDataManager().getContact(lookUpKey));
+//        getMvpView().setDetails(getDataRepository().getContact(lookUpKey));
     }
 
     @Override

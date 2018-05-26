@@ -12,8 +12,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.nozimy.app65_home1.data.DataManager;
-import com.nozimy.app65_home1.data.entities.Contact;
+
+import com.nozimy.app65_home1.ContactsListApp;
+import com.nozimy.app65_home1.DataRepository;
+import com.nozimy.app65_home1.model.Contact;
 import com.nozimy.app65_home1.ui.detail.mvp.ContactDetailsContract;
 import com.nozimy.app65_home1.ui.detail.mvp.ContactDetailsPresenter;
 import com.nozimy.app65_home1.ui.listing.ContactsListFragment;
@@ -85,8 +87,8 @@ public class DetailsFragment extends Fragment implements ContactDetailsContract.
 
 
     private void setupPresenter() {
-        DataManager dataManager = new DataManager(getActivity());
-        contactDetailsPresenter = new ContactDetailsPresenter(dataManager);
+        DataRepository repository = ((ContactsListApp) getActivity().getApplication()).getRepository();
+        contactDetailsPresenter = new ContactDetailsPresenter(repository);
         contactDetailsPresenter.onAttach(this);
     }
 
@@ -109,10 +111,10 @@ public class DetailsFragment extends Fragment implements ContactDetailsContract.
     @Override
     public void setDetails(Contact contact) {
         String fio = "";
-        fio += getNotNullString(contact.familyName) + " " + getNotNullString(contact.givenName) + " " + getNotNullString(contact.middleName);
-        nameTextView.setText(fio);
-        phoneTextView.setText(contact.phoneNumber);
-        emailTextView.setText(contact.email);
+//        fio += getNotNullString(contact.familyName) + " " + getNotNullString(contact.givenName) + " " + getNotNullString(contact.middleName);
+//        nameTextView.setText(fio);
+//        phoneTextView.setText(contact.phoneNumber);
+//        emailTextView.setText(contact.email);
     }
 
     private String getNotNullString(String str){

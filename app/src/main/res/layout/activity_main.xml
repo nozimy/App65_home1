@@ -7,6 +7,17 @@
     android:visibility="visible"
     tools:context=".ui.listing.MainActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/main_toolbar"
+        android:elevation="4dp"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        />
+
     <fragment
         android:id="@+id/fragment"
         android:name="com.nozimy.app65_home1.ui.listing.ContactsListFragment"

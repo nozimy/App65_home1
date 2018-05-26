@@ -2,7 +2,7 @@ package com.nozimy.app65_home1.ui.listing.mvp;
 
 import android.app.Activity;
 
-import com.nozimy.app65_home1.data.entities.Contact;
+import com.nozimy.app65_home1.model.Contact;
 import com.nozimy.app65_home1.ui.common.mvp.MvpView;
 import com.nozimy.app65_home1.ui.detail.DetailsFragment;
 

@@ -1,0 +1,47 @@
+package com.nozimy.app65_home1.viewmodel;
+
+import android.app.Application;
+import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MediatorLiveData;
+
+import com.nozimy.app65_home1.ContactsListApp;
+import com.nozimy.app65_home1.DataRepository;
+import com.nozimy.app65_home1.db.entity.ContactEntity;
+
+import java.util.List;
+
+public class ContactListViewModel extends AndroidViewModel {
+
+    private final MediatorLiveData<List<ContactEntity>> mObservableContacts;
+
+    private final DataRepository dataRepository;
+
+    public ContactListViewModel(Application application) {
+        super(application);
+
+        dataRepository = ((ContactsListApp) application).getRepository();
+
+        mObservableContacts = new MediatorLiveData<>();
+        // set by default null, until we get data from the database.
+        mObservableContacts.setValue(null);
+
+        LiveData<List<ContactEntity>> contacts = ((ContactsListApp) application).getRepository()
+                .getContacts();
+
+        // observe the changes of the contacts from the database and forward them
+        mObservableContacts.addSource(contacts, mObservableContacts::setValue);
+    }
+
+    /**
+     * Expose the LiveData Products query so the UI can observe it.
+     */
+    public LiveData<List<ContactEntity>> getContacts() {
+        return mObservableContacts;
+    }
+
+    public LiveData<List<ContactEntity>> getByDisplayName(String searchText) {
+        return dataRepository.getByDisplayName(searchText);
+    }
+
+}
