@@ -5,10 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 
-import com.nozimy.app65_home1.model.Contact;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ImportService {
     private ContentResolver contentResolver;
@@ -33,11 +33,13 @@ public class ImportService {
                     String displayName = cursor.getString(
                             cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
 
+                    Map<String,String> names = getNames(id);
+
                     ArrayList<String> phoneNumbers = loadPhones(lookUpKey);
                     ArrayList<String> emails = loadEmails(lookUpKey);
 
                     if (phoneNumbers.size() > 0) {
-                        contactList.add(new ContactFromProvider(id, displayName, phoneNumbers, emails));
+                        contactList.add(new ContactFromProvider(id, displayName, phoneNumbers, emails, names.get("family"), names.get("given"), names.get("middle")));
                     }
                 }
             } finally {
@@ -121,57 +123,69 @@ public class ImportService {
         return emails;
     }
 
+    private Map<String, String> getNames(String contactId){
+        Map<String, String> names = new HashMap<String, String>();
+
+        String whereName = ContactsContract.Data.MIMETYPE + " = ? AND " + ContactsContract.CommonDataKinds.StructuredName.CONTACT_ID + " = ?";
+        String[] whereNameParams = new String[] { ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE, contactId };
+        Cursor nameCur = contentResolver.query(ContactsContract.Data.CONTENT_URI, null, whereName, whereNameParams, ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME);
+        if(isCursorValid(nameCur)){
+            while (nameCur.moveToNext()) {
+                names.put("given", nameCur.getString(nameCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME)));
+                names.put("family", nameCur.getString(nameCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME)));
+                names.put("middle", nameCur.getString(nameCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME)));
+            }
+            closeCursor(nameCur);
+        }
+
+        return names;
+    }
+
     public static class ContactFromProvider {
         List<String> phones;
         List<String> emails;
         private String id;
         private String displayName;
+        private String familyName;
+        private String givenName;
+        private String middleName;
 
-        public ContactFromProvider(String id, String displayName, List<String> phones, List<String> emails) {
+        public ContactFromProvider(String id, String displayName, List<String> phones, List<String> emails, String familyName, String givenName, String middleName) {
             this.phones = phones;
             this.emails = emails;
             this.id = id;
             this.displayName = displayName;
+            this.familyName = familyName;
+            this.givenName = givenName;
+            this.middleName = middleName;
         }
 
-//        @Override
-//        public long getId() {
-//            return 0;
-//        }
-//
-//        @Override
         public String getId() {
             return id;
         }
 
-//        @Override
         public String getDisplayName() {
             return displayName;
         }
 
-//        @Override
         public List<String> getPhones() {
             return phones;
         }
 
-//        @Override
         public List<String> getEmails() {
             return emails;
         }
 
-//        @Override
-//        public String getFamilyName() {
-//            return null;
-//        }
-//
-//        @Override
-//        public String getGivenName() {
-//            return null;
-//        }
-//
-//        @Override
-//        public String getMiddleName() {
-//            return null;
-//        }
+        public String getFamilyName() {
+            return familyName;
+        }
+
+        public String getGivenName() {
+            return givenName;
+        }
+
+        public String getMiddleName() {
+            return middleName;
+        }
     }
 }

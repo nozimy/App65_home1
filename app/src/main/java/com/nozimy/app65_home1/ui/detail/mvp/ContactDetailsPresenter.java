@@ -2,47 +2,52 @@ package com.nozimy.app65_home1.ui.detail.mvp;
 
 import android.Manifest;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 import com.nozimy.app65_home1.DataRepository;
+import com.nozimy.app65_home1.db.entity.ContactEntity;
+import com.nozimy.app65_home1.db.entity.EmailEntity;
+import com.nozimy.app65_home1.db.entity.PhoneEntity;
 import com.nozimy.app65_home1.ui.common.mvp.BasePresenter;
 import com.nozimy.app65_home1.utils.CommonUtils;
 
+import java.util.List;
+
+import io.reactivex.Flowable;
+
 public class ContactDetailsPresenter<V extends ContactDetailsContract.View> extends BasePresenter<V> implements ContactDetailsContract.Presenter<V> {
 
-    private static final int REQUEST_CODE_READ_CONTACTS=1;
+    private final String contactId;
+    private final Flowable<ContactEntity> observableContact;
+    private final Flowable<List<PhoneEntity>> observablePhones;
+    private final Flowable<List<EmailEntity>> observableEmails;
 
-    public ContactDetailsPresenter(DataRepository repository) {
+
+    public ContactDetailsPresenter(DataRepository repository, String contactId) {
         super(repository);
+        Log.d("CONTACT ID", contactId);
+        this.contactId = contactId;
+        observableContact = getDataRepository().getContact(this.contactId);
+        observablePhones = getDataRepository().getPhones(this.contactId);
+        observableEmails = getDataRepository().getEmails(this.contactId);
+    }
+
+    public Flowable<ContactEntity> getContact(){
+        return observableContact;
+    }
+
+    public Flowable<List<PhoneEntity>> getPhones(){
+        return observablePhones;
+    }
+
+    public Flowable<List<EmailEntity>> getEmails(){
+        return observableEmails;
     }
 
     @Override
-    public void loadDetails(String lookUpKey) {
-//        getMvpView().setDetails(getDataRepository().getContact(lookUpKey));
+    public void loadDetails() {
+        getMvpView().subscribeUi();
     }
 
-    @Override
-    public void requestReadContacts() {
-        if(!getMvpView().checkSelfPermission()){
-            //todo: I should't use android lib in the presenter.
-            // Use DI or anything else to decouple this behaviour.
-            // https://medium.com/@cervonefrancesco/you-can-do-that-by-hiding-this-behavior-behind-an-interface-to-get-the-location-lets-say-e7a778c9ea6e
-            ActivityCompat.requestPermissions(getMvpView().getViewActivity(), new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CODE_READ_CONTACTS);
-        }
-    }
-
-    @Override
-    public void onPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        boolean readContactsGranted = false;
-
-        switch (requestCode){
-            case REQUEST_CODE_READ_CONTACTS:
-                if(grantResults.length > 0 && getMvpView().checkPermissionGranted(grantResults[0])){
-                    readContactsGranted = true;
-                }
-        }
-
-        if(!readContactsGranted){
-            CommonUtils.showToast(getMvpView().getViewActivity(), "Требуется установить разрешения");
-        }
-    }
 }
+

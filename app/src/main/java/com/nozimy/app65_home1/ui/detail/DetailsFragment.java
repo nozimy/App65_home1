@@ -1,62 +1,64 @@
 package com.nozimy.app65_home1.ui.detail;
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nozimy.app65_home1.ContactsListApp;
 import com.nozimy.app65_home1.DataRepository;
-import com.nozimy.app65_home1.model.Contact;
+import com.nozimy.app65_home1.db.entity.ContactEntity;
+import com.nozimy.app65_home1.db.entity.EmailEntity;
+import com.nozimy.app65_home1.db.entity.PhoneEntity;
 import com.nozimy.app65_home1.ui.detail.mvp.ContactDetailsContract;
 import com.nozimy.app65_home1.ui.detail.mvp.ContactDetailsPresenter;
 import com.nozimy.app65_home1.ui.listing.ContactsListFragment;
 import com.nozimy.app65_home1.R;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+
 public class DetailsFragment extends Fragment implements ContactDetailsContract.View{
 
     ContactDetailsPresenter contactDetailsPresenter;
 
-    private String mContactLoopUpKey;
-    private TextView nameTextView;
-    private TextView emailTextView;
-    private TextView phoneTextView;
+    @BindView(R.id.details_text) TextView nameTextView;
+    @BindView(R.id.email) TextView emailTextView;
+    @BindView(R.id.phone_number) TextView phoneTextView;
+    @BindView(R.id.contactDetailsProgressBarWrap) LinearLayout contactDetailsProgressBarWrap;
+    Unbinder unbinder;
+
+    private final CompositeDisposable mDisposable = new CompositeDisposable();
 
     public DetailsFragment() {
     }
 
-    public static DetailsFragment newInstance(String mContactLoopUpKey) {
+    public static DetailsFragment newInstance(String mContactId) {
         DetailsFragment fragment = new DetailsFragment();
         Bundle args = new Bundle();
-        args.putString(ContactsListFragment.DETAILS_KEY, mContactLoopUpKey);
+        args.putString(ContactsListFragment.DETAILS_KEY, mContactId);
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mContactLoopUpKey = getArguments().getString(ContactsListFragment.DETAILS_KEY);
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_details, container, false);
-        nameTextView = view.findViewById(R.id.details_text);
-        emailTextView = view.findViewById(R.id.email);
-        phoneTextView = view.findViewById(R.id.phone_number);
+        unbinder = ButterKnife.bind(this, view);
+
         return view;
     }
 
@@ -65,59 +67,69 @@ public class DetailsFragment extends Fragment implements ContactDetailsContract.
         super.onActivityCreated(savedInstanceState);
 
         setupPresenter();
-        contactDetailsPresenter.requestReadContacts();
-
-        if (checkSelfPermission()){
-            contactDetailsPresenter.loadDetails(mContactLoopUpKey);
-        }
+        contactDetailsPresenter.loadDetails();
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        contactDetailsPresenter.onPermissionsResult(requestCode, permissions, grantResults);
-        if (checkSelfPermission()){
-            contactDetailsPresenter.loadDetails(mContactLoopUpKey);
-        }
-    }
-
-    public String getShownLookUpKey() {
+    public String getShownId() {
         return getArguments().getString(ContactsListFragment.DETAILS_KEY);
     }
 
 
     private void setupPresenter() {
         DataRepository repository = ((ContactsListApp) getActivity().getApplication()).getRepository();
-        contactDetailsPresenter = new ContactDetailsPresenter(repository);
+        contactDetailsPresenter = new ContactDetailsPresenter(repository, getArguments().getString(ContactsListFragment.DETAILS_KEY));
         contactDetailsPresenter.onAttach(this);
     }
 
     @Override
-    public boolean checkSelfPermission() {
-        int hasReadContactPermission = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS);
-        return checkPermissionGranted(hasReadContactPermission);
+    public void subscribeUi() {
+        mDisposable.add(Flowable.zip(contactDetailsPresenter.getContact(),
+                contactDetailsPresenter.getPhones(),
+                contactDetailsPresenter.getEmails(),
+                Flowable.timer(1000, TimeUnit.MILLISECONDS),
+                (contact,phones,emails, timerValue)-> new Object[]{contact,phones,emails})
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(__->contactDetailsProgressBarWrap.setVisibility(View.VISIBLE))
+                .subscribe(data -> {
+                    if(data != null){
+                        Object[] arr = (Object[])data;
+                        ContactEntity contact = (ContactEntity) arr[0];
+                        List<PhoneEntity> phoneEntities = (List<PhoneEntity>) arr[1];
+                        List<EmailEntity> emailEntities = (List<EmailEntity>) arr[2];
+
+                        nameTextView.setText(contact.getDisplayName());
+                        Log.d("onSubscribe", contact.getDisplayName());
+
+                        StringBuilder sb = new StringBuilder();
+                        for (PhoneEntity phone : phoneEntities) {
+                            sb.append(String.format("%s\n",
+                                    phone.getNumber()));
+                        }
+                        phoneTextView.setText(sb);
+
+                        sb.setLength(0);
+                        for (EmailEntity email : emailEntities) {
+                            sb.append(String.format("%s\n",
+                                    email.getAddress()));
+                        }
+                        emailTextView.setText(sb);
+
+                        contactDetailsProgressBarWrap.setVisibility(View.GONE);
+                    }
+                }));
     }
 
     @Override
-    public boolean checkPermissionGranted(int permission) {
-        return permission == PackageManager.PERMISSION_GRANTED;
+    public void onStop() {
+        super.onStop();
+
+        mDisposable.clear();
     }
 
     @Override
-    public Activity getViewActivity() {
-        return getActivity();
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
-    @Override
-    public void setDetails(Contact contact) {
-        String fio = "";
-//        fio += getNotNullString(contact.familyName) + " " + getNotNullString(contact.givenName) + " " + getNotNullString(contact.middleName);
-//        nameTextView.setText(fio);
-//        phoneTextView.setText(contact.phoneNumber);
-//        emailTextView.setText(contact.email);
-    }
-
-    private String getNotNullString(String str){
-        return str != null ? str : "";
-    }
 }

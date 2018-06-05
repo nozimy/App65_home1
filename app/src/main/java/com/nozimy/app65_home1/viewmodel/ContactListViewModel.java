@@ -11,11 +11,15 @@ import com.nozimy.app65_home1.db.entity.ContactEntity;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+
 public class ContactListViewModel extends AndroidViewModel {
 
     private final MediatorLiveData<List<ContactEntity>> mObservableContacts;
 
     private final DataRepository dataRepository;
+
+    private final Flowable<List<ContactEntity>> contactList;
 
     public ContactListViewModel(Application application) {
         super(application);
@@ -31,6 +35,9 @@ public class ContactListViewModel extends AndroidViewModel {
 
         // observe the changes of the contacts from the database and forward them
         mObservableContacts.addSource(contacts, mObservableContacts::setValue);
+
+        contactList = ((ContactsListApp) application).getRepository()
+                .getContactsRx();
     }
 
     /**
@@ -43,5 +50,11 @@ public class ContactListViewModel extends AndroidViewModel {
     public LiveData<List<ContactEntity>> getByDisplayName(String searchText) {
         return dataRepository.getByDisplayName(searchText);
     }
+
+    public Flowable<List<ContactEntity>> getByDisplayNameRx(String searchText) {
+        return dataRepository.getByDisplayNameRx(searchText);
+    }
+
+    public Flowable<List<ContactEntity>> getContactsRx(){return contactList;}
 
 }

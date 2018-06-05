@@ -12,15 +12,26 @@ import com.nozimy.app65_home1.db.entity.ContactEntity;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+
 @Dao
 public interface ContactDao {
 
     @Query("SELECT * FROM contacts")
     LiveData<List<ContactEntity>> getAll();
 
+    @Query("SELECT * FROM contacts")
+    Flowable<List<ContactEntity>> getAllRx();
+
 //    @Query("SELECT * FROM contacts WHERE UPPER(displayName) LIKE UPPER('%' || :searchText || '%')")
-    @Query("SELECT * FROM contacts WHERE displayName LIKE :searchText")
+    @Query("SELECT * FROM contacts WHERE LOWER(display_name) LIKE LOWER(:searchText)")
     LiveData<List<ContactEntity>> getByDisplayName(String searchText);
+
+    @Query("SELECT * FROM contacts WHERE LOWER(display_name) LIKE LOWER(:searchText)")
+    Flowable<List<ContactEntity>> getByDisplayNameRx(String searchText);
+
+    @Query("SELECT * FROM contacts WHERE id = :id")
+    Flowable<ContactEntity> getById(String id);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insert(ContactEntity contact);

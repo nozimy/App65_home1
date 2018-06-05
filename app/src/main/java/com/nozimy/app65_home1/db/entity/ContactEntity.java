@@ -3,12 +3,13 @@ package com.nozimy.app65_home1.db.entity;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 import com.nozimy.app65_home1.model.Contact;
 
-@Entity(tableName = "contacts")
+@Entity(tableName = "contacts", indices = {@Index("display_name")})
 public class ContactEntity implements Contact{
     @PrimaryKey
     @NonNull
@@ -23,9 +24,10 @@ public class ContactEntity implements Contact{
     @ColumnInfo(name = "middle_name")
     private String middleName;
 
+    @ColumnInfo(name = "display_name")
     private String displayName;
 
-    public ContactEntity(String id, String familyName, String givenName, String middleName, String displayName) {
+    public ContactEntity(@NonNull String id, String familyName, String givenName, String middleName, String displayName) {
         this.id = id;
         this.familyName = familyName;
         this.givenName = givenName;
@@ -35,13 +37,14 @@ public class ContactEntity implements Contact{
 
     public ContactEntity(Contact contact) {
         this.id = contact.getId();
+        this.displayName = contact.getDisplayName();
         this.familyName = contact.getFamilyName();
         this.givenName = contact.getGivenName();
         this.middleName = contact.getMiddleName();
     }
 
     @Ignore
-    public ContactEntity(String id, String displayName){
+    public ContactEntity(@NonNull String id, String displayName){
         this.id = id;
         this.displayName = displayName;
     }
@@ -54,6 +57,7 @@ public class ContactEntity implements Contact{
         return displayName;
     }
 
+    @NonNull
     public String getId() {
         return id;
     }

@@ -1,4 +1,4 @@
-package com.nozimy.app65_home1;
+package com.nozimy.app65_home1.utils;
 
 import android.os.Looper;
 import android.os.Handler;

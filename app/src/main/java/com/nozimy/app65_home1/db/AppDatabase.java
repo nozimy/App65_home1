@@ -67,6 +67,9 @@ public abstract class AppDatabase extends RoomDatabase{
             this.runInTransaction(() -> {
                 this.contactDao().insert(new ContactEntity(
                         contact.getId(),
+                        contact.getFamilyName(),
+                        contact.getGivenName(),
+                        contact.getMiddleName(),
                         contact.getDisplayName()
                 ));
                 for(String number: contact.getPhones()){
@@ -76,7 +79,6 @@ public abstract class AppDatabase extends RoomDatabase{
                     this.emailDao().insert(new EmailEntity(contact.getId(), email));
                 }
             });
-
         }
     }
 

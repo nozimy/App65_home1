@@ -1,44 +1,30 @@
 package com.nozimy.app65_home1.ui.listing.mvp;
 
-import android.Manifest;
-import android.support.v4.app.ActivityCompat;
-
 import com.nozimy.app65_home1.DataRepository;
 import com.nozimy.app65_home1.ImportService;
+import com.nozimy.app65_home1.utils.Settings;
 import com.nozimy.app65_home1.ui.common.mvp.BasePresenter;
 import com.nozimy.app65_home1.utils.CommonUtils;
 
-public class ContactsListPresenter<V extends ContactsListMvpView> extends BasePresenter<V> implements ContactsListMvpPresenter<V> {
+public class ContactsListPresenter<V extends ContactListContract.View> extends BasePresenter<V> implements ContactListContract.Presenter<V> {
 
-    private static final int REQUEST_CODE_READ_CONTACTS=1;
-
-    private String curLookUpKey;
-
+    public static final int REQUEST_CODE_READ_CONTACTS=1;
     private ImportService importService;
+    private Settings settings;
 
-    public ContactsListPresenter(DataRepository repository, ImportService service) {
+    public ContactsListPresenter(DataRepository repository, ImportService service, Settings settings) {
         super(repository);
-
-        importService = service;
+        this.importService = service;
+        this.settings = settings;
     }
 
     public void load(){
-
-        getDataRepository().importFromProvider(importService);
-
-        //todo: Если не импортированы, то импортировать данные из контакт-провайдера в БД.
-
-//        getMvpView().setContacts(getDataRepository().getContacts());
-    }
-
-    @Override
-    public void requestReadContacts() {
-        if(!getMvpView().checkSelfPermission()){
-            //todo: I should't use android lib in the presenter.
-            // Use DI or anything else to decouple this behaviour.
-            // https://medium.com/@cervonefrancesco/you-can-do-that-by-hiding-this-behavior-behind-an-interface-to-get-the-location-lets-say-e7a778c9ea6e
-            ActivityCompat.requestPermissions(getMvpView().getViewActivity(), new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CODE_READ_CONTACTS);
+        if(!settings.getContactsImported()){
+            getMvpView().showLoadingIndicator();
+            getDataRepository().importFromProvider(importService);
+            settings.setContactsImported(true);
         }
+        getMvpView().subscribeUi();
     }
 
     @Override
@@ -61,15 +47,14 @@ public class ContactsListPresenter<V extends ContactsListMvpView> extends BasePr
     }
 
     @Override
-    public void showDetails(int position) {
-//        curLookUpKey = getDataManager().getContacts().get(position).lookUpKey;
+    public void showDetails(String id) {
 
         if (getMvpView().isDualPane()) {
-            if (getMvpView().getDetailsFragment() == null || !curLookUpKey.equals(getMvpView().getDetailsFragment().getShownLookUpKey())) {
-                getMvpView().showContactDetailsFragment(curLookUpKey);
+            if (getMvpView().getDetailsFragment() == null || !id.equals(getMvpView().getDetailsFragment().getShownId())) {
+                getMvpView().showContactDetailsFragment(id);
             }
         } else {
-            getMvpView().openContactDetailsActivity(curLookUpKey);
+            getMvpView().openContactDetailsActivity(id);
         }
     }
 }

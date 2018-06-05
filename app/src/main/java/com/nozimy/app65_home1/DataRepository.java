@@ -2,15 +2,16 @@ package com.nozimy.app65_home1;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
-import android.content.Context;
-import android.os.AsyncTask;
 
 import com.nozimy.app65_home1.db.AppDatabase;
-import com.nozimy.app65_home1.db.dao.ContactDao;
 import com.nozimy.app65_home1.db.entity.ContactEntity;
-import com.nozimy.app65_home1.model.Contact;
+import com.nozimy.app65_home1.db.entity.EmailEntity;
+import com.nozimy.app65_home1.db.entity.PhoneEntity;
+import com.nozimy.app65_home1.utils.AppExecutors;
 
 import java.util.List;
+
+import io.reactivex.Flowable;
 
 public class DataRepository {
 
@@ -52,28 +53,30 @@ public class DataRepository {
         return mDatabase.contactDao().getByDisplayName(searchText);
     }
 
-//    public void insertContact(ContactEntity contactEntity){
-//        new insertAsyncTask(mDatabase.contactDao()).execute(contactEntity);
-//    }
-//
-//    private static class insertAsyncTask extends AsyncTask<ContactEntity, Void, Void> {
-//        private ContactDao mAsyncTaskDao;
-//
-//        insertAsyncTask(ContactDao dao) {
-//            mAsyncTaskDao = dao;
-//        }
-//
-//        @Override
-//        protected Void doInBackground(final ContactEntity... params) {
-//            mAsyncTaskDao.insert(params[0]);
-//            return null;
-//        }
-//    }
+    public Flowable<List<ContactEntity>> getByDisplayNameRx(String searchText){
+        return mDatabase.contactDao().getByDisplayNameRx(searchText);
+    }
 
     public void importFromProvider(ImportService service){
         appExecutors.diskIO().execute(() -> {
             mDatabase.importContactsFromProvider(service);
         });
+    }
+
+    public Flowable<List<ContactEntity>> getContactsRx(){
+        return mDatabase.contactDao().getAllRx();
+    }
+
+    public Flowable<ContactEntity> getContact(String contactId){
+        return mDatabase.contactDao().getById(contactId);
+    }
+
+    public Flowable<List<PhoneEntity>> getPhones(String contactId){
+        return mDatabase.phoneDao().getPhones(contactId);
+    }
+
+    public Flowable<List<EmailEntity>> getEmails(String contactId){
+        return mDatabase.emailDao().getEmails(contactId);
     }
 
 }
