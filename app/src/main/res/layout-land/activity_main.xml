@@ -24,12 +24,19 @@
         >
 
 
-        <fragment
-            android:id="@+id/fragment"
-            android:name="com.nozimy.app65_home1.ui.listing.ContactsListFragment"
+        <!--<fragment-->
+            <!--android:id="@+id/fragment"-->
+            <!--android:name="com.nozimy.app65_home1.ui.contacts.ContactListFragment"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_weight="1"/>-->
+
+        <FrameLayout
+            android:id="@+id/main_fragment"
             android:layout_height="match_parent"
             android:layout_width="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            />
 
         <FrameLayout
             android:id="@+id/fragment_container"

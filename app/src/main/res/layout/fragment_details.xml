@@ -5,7 +5,7 @@
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.detail.DetailsFragment">
+    tools:context=".ui.contact.ContactFragment">
 
     <LinearLayout
         android:id="@+id/contactDetailsProgressBarWrap"
@@ -56,15 +56,16 @@
                 android:id="@+id/email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="394dp"
+                android:layout_marginBottom="8dp"
                 android:layout_weight="1"
                 android:padding="@dimen/text_margin" />
 
-            <com.google.android.gms.maps.MapView
-                android:id="@+id/mapView"
+            <Button
+                android:id="@+id/set_address_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:text="Задать адрес" />
 
         </LinearLayout>
     </ScrollView>

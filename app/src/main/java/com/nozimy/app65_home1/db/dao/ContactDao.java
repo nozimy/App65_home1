@@ -13,6 +13,8 @@ import com.nozimy.app65_home1.db.entity.ContactEntity;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 @Dao
 public interface ContactDao {
@@ -21,20 +23,23 @@ public interface ContactDao {
     LiveData<List<ContactEntity>> getAll();
 
     @Query("SELECT * FROM contacts")
-    Flowable<List<ContactEntity>> getAllRx();
+    Single<List<ContactEntity>> getAllRx();
 
 //    @Query("SELECT * FROM contacts WHERE UPPER(displayName) LIKE UPPER('%' || :searchText || '%')")
     @Query("SELECT * FROM contacts WHERE LOWER(display_name) LIKE LOWER(:searchText)")
     LiveData<List<ContactEntity>> getByDisplayName(String searchText);
 
     @Query("SELECT * FROM contacts WHERE LOWER(display_name) LIKE LOWER(:searchText)")
-    Flowable<List<ContactEntity>> getByDisplayNameRx(String searchText);
+    Single<List<ContactEntity>> getByDisplayNameRx(String searchText);
 
     @Query("SELECT * FROM contacts WHERE id = :id")
-    Flowable<ContactEntity> getById(String id);
+    Maybe<ContactEntity> getById(String id);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insert(ContactEntity contact);
+
+    @Query("UPDATE contacts SET lat= :lat, lng= :lng, address= :address WHERE id= :id")
+    void updateAddress(String id, double lat, double lng, String address);
 
 //    @Query("SELECT * FROM contacts WHERE id IN (:ids)")
 //    List<ContactEntity> loadAllByIds(int[] ids);
@@ -52,6 +57,6 @@ public interface ContactDao {
 //    @Delete
 //    void delete(ContactEntity contact);
 //
-//    @Update
-//    void update(ContactEntity contact);
+    @Update
+    void update(ContactEntity contact);
 }

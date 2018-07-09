@@ -1,20 +1,20 @@
 package com.nozimy.app65_home1.utils;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+
+import javax.inject.Inject;
 
 public class Settings {
     public static final String CONTACTS_IMPORTED = "com.nozimy.app65_home1.CONTACTS_IMPORTED";
-    private final Context context;
+    private SharedPreferences sharedPreferences;
 
-    public Settings(Context context) {
-        this.context = context;
+    @Inject
+    public Settings(SharedPreferences sharedPreferences) {
+        this.sharedPreferences = sharedPreferences;
     }
 
     private void set(Bundle bundle){
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(CONTACTS_IMPORTED, bundle.getBoolean(CONTACTS_IMPORTED));
         editor.apply();
@@ -22,7 +22,6 @@ public class Settings {
 
     private Bundle get(){
         Bundle bundle = new Bundle();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         bundle.putBoolean(CONTACTS_IMPORTED, sharedPreferences.getBoolean(CONTACTS_IMPORTED, false));
         return bundle;
     }

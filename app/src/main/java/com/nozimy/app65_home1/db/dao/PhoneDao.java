@@ -12,11 +12,13 @@ import com.nozimy.app65_home1.db.entity.PhoneEntity;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 @Dao
 public interface PhoneDao {
     @Query("SELECT * FROM phones WHERE contactId = :contactId")
-    Flowable<List<PhoneEntity>> getPhones(String contactId);
+    Maybe<List<PhoneEntity>> getPhones(String contactId);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(PhoneEntity phone);

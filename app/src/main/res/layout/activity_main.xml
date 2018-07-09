@@ -6,20 +6,15 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:visibility="visible"
-    tools:context=".ui.listing.MainActivity">
+    tools:context=".ui.main.MainActivity">
 
-    <android.support.v7.widget.Toolbar
+
+    <include layout="@layout/toolbar"
         android:id="@+id/main_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        />
 
     <FrameLayout
-        android:id="@+id/map_fragment"
+        android:id="@+id/main_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

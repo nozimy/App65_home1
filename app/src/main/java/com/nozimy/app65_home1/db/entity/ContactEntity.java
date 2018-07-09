@@ -7,7 +7,7 @@ import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
-import com.nozimy.app65_home1.model.Contact;
+import com.nozimy.app65_home1.db.model.Contact;
 
 @Entity(tableName = "contacts", indices = {@Index("display_name")})
 public class ContactEntity implements Contact{
@@ -26,6 +26,11 @@ public class ContactEntity implements Contact{
 
     @ColumnInfo(name = "display_name")
     private String displayName;
+
+    private double lat;
+    private double lng;
+
+    private String address;
 
     public ContactEntity(@NonNull String id, String familyName, String givenName, String middleName, String displayName) {
         this.id = id;
@@ -89,5 +94,29 @@ public class ContactEntity implements Contact{
 
     public void setMiddleName(String middleName) {
         this.middleName = middleName;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLng() {
+        return lng;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

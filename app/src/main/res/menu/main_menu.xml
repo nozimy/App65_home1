@@ -15,4 +15,7 @@
         android:id="@+id/app_bar_map"
         app:showAsAction="ifRoom|collapseActionView"
         />
+    <item
+        android:id="@+id/app_bar_route"
+        android:title="Маршрут" />
 </menu>

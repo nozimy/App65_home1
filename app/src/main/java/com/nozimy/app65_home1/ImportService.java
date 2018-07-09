@@ -1,7 +1,6 @@
 package com.nozimy.app65_home1;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 
@@ -16,8 +15,8 @@ public class ImportService {
     private static final String CONTACT_PHONE_SELECTION = ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY + " = ?";
     private static final String CONTACT_EMAIL_SELECTION = ContactsContract.CommonDataKinds.Email.LOOKUP_KEY + " = ?";
 
-    public ImportService(Context context) {
-        contentResolver = context.getContentResolver();
+    public ImportService(ContentResolver contentResolver) {
+        this.contentResolver = contentResolver;
     }
 
     public ArrayList<ContactFromProvider> loadContacts(){
