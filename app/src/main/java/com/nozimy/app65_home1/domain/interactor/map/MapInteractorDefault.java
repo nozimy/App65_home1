@@ -19,20 +19,21 @@ public class MapInteractorDefault implements MapInteractor {
     private DataRepository dataRepository;
     @NonNull GeocodeApiClient geocodeApiClient;
 
-    public MapInteractorDefault(@NonNull DataRepository dataRepository, GeocodeApiClient geocodeApiClient) {
+    public MapInteractorDefault(@NonNull DataRepository dataRepository, 
+                                    GeocodeApiClient geocodeApiClient) {
         this.dataRepository = dataRepository;
         this.geocodeApiClient = geocodeApiClient;
     }
 
     @NonNull
     @Override
-    public Maybe<ContactEntity> getContact(String contactId) {
+    public Maybe<Contact> getContact(String contactId) {
         return Maybe.defer(() -> dataRepository.getContact(contactId));
     }
 
     @NonNull
     @Override
-    public Single<List<ContactEntity>> getContacts() {
+    public Single<List<Contact>> getContacts() {
         return Single.defer(() -> dataRepository.getContactsRx());
     }
 

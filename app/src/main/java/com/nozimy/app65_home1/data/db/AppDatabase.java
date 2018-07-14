@@ -19,46 +19,9 @@ import java.util.List;
 @Database(entities = {ContactEntity.class, PhoneEntity.class, EmailEntity.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase{
 
-//    private static AppDatabase sInstance;
-//    private static final String DATABASE_NAME = "contacts-db";
-//    private final MutableLiveData<Boolean> mIsDatabaseCreated = new MutableLiveData<>();
-
     public abstract ContactDao contactDao();
     public abstract PhoneDao phoneDao();
     public abstract EmailDao emailDao();
-
-//    public static AppDatabase getInstance(final Context context){
-//        if(sInstance == null){
-//            synchronized (AppDatabase.class){
-//                if(sInstance == null){
-//                    sInstance = buildDatabase(context.getApplicationContext());
-//                    sInstance.updateDatabaseCreated(context.getApplicationContext());
-//                }
-//            }
-//        }
-//        return sInstance;
-//    }
-//
-//    private static AppDatabase buildDatabase(final Context appContext){
-//        return Room.databaseBuilder(appContext, AppDatabase.class, DATABASE_NAME).build();
-//    }
-
-//    /**
-//     * Check whether the database already exists and expose it via {@link #getDatabaseCreated()}
-//     */
-//    private void updateDatabaseCreated(final Context context) {
-//        if (context.getDatabasePath(DATABASE_NAME).exists()) {
-//            setDatabaseCreated();
-//        }
-//    }
-
-//    private void setDatabaseCreated(){
-//        mIsDatabaseCreated.postValue(true);
-//    }
-
-//    public LiveData<Boolean> getDatabaseCreated() {
-//        return mIsDatabaseCreated;
-//    }
 
     public void importContactsFromProvider(ImportService importService){
         List<ImportService.ContactFromProvider> contactListFromProvider = importService.loadContacts();

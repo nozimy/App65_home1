@@ -7,7 +7,9 @@ import com.nozimy.app65_home1.ui.contacts.ContactListFragment;
 import dagger.Subcomponent;
 
 @FragmentScope
-@Subcomponent(modules = {ContactListModule.class, ImportServiceModule.class, DisposableModule.class})
+@Subcomponent(modules = {ContactListModule.class, 
+                            ImportServiceModule.class, 
+                            DisposableModule.class})
 public interface ContactListComponent {
 
     void inject(ContactListFragment contactListFragment);

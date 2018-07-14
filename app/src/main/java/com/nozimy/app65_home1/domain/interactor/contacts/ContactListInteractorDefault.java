@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import com.nozimy.app65_home1.ImportService;
 import com.nozimy.app65_home1.db.DataRepository;
-import com.nozimy.app65_home1.db.entity.ContactEntity;
 
 import java.util.List;
 
@@ -22,20 +21,21 @@ public class ContactListInteractorDefault implements ContactListInteractor {
     private ImportService importService;
 
     @Inject
-    public ContactListInteractorDefault(@NonNull DataRepository dataRepository, @NonNull ImportService importService){
+    public ContactListInteractorDefault(@NonNull DataRepository dataRepository, 
+                                            @NonNull ImportService importService){
         this.dataRepository = dataRepository;
         this.importService = importService;
     }
 
     @NonNull
     @Override
-    public Single<List<ContactEntity>> getContacts() {
+    public Single<List<Contact>> getContacts() {
         return Single.defer(() -> dataRepository.getContactsRx());
     }
 
     @NonNull
     @Override
-    public Single<List<ContactEntity>> getByDisplayName(String searchText) {
+    public Single<List<Contact>> getByDisplayName(String searchText) {
         return Single.defer(() -> dataRepository.getByDisplayNameRx(searchText));
     }
 
@@ -43,6 +43,5 @@ public class ContactListInteractorDefault implements ContactListInteractor {
     public Completable importFromProvider() {
         return dataRepository.importFromProvider(importService);
     }
-
 
 }

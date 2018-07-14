@@ -27,19 +27,19 @@ public class ContactInteractorDefault implements ContactInteractor {
 
     @NonNull
     @Override
-    public Maybe<ContactEntity> getContact(String contactId) {
+    public Maybe<Contact> getContact(String contactId) {
         return Maybe.defer(() -> dataRepository.getContact(contactId));
     }
 
     @NonNull
     @Override
-    public Maybe<List<PhoneEntity>> getPhones(String contactId) {
+    public Maybe<List<Phone>> getPhones(String contactId) {
         return Maybe.defer(() -> dataRepository.getPhones(contactId));
     }
 
     @NonNull
     @Override
-    public Maybe<List<EmailEntity>> getEmails(String contactId) {
+    public Maybe<List<Email>> getEmails(String contactId) {
         return Maybe.defer(() -> dataRepository.getEmails(contactId));
     }
 

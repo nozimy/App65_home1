@@ -13,6 +13,6 @@ public interface RouteInteractor {
     Single<RouteResponse> getRoute(String origin, String destination);
 
     @NonNull
-    Maybe<ContactEntity> getContact(String contactId);
+    Maybe<Contact> getContact(String contactId);
 
 }

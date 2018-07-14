@@ -14,10 +14,10 @@ import io.reactivex.Single;
 public interface MapInteractor {
 
     @NonNull
-    Maybe<ContactEntity> getContact(String contactId);
+    Maybe<Contact> getContact(String contactId);
 
     @NonNull
-    Single<List<ContactEntity>> getContacts();
+    Single<List<Contact>> getContacts();
 
     Completable updateContactAddress(String id, double lat, double lng, String address);
 

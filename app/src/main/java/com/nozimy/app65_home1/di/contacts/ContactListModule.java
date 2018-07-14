@@ -19,13 +19,16 @@ public class ContactListModule {
 
     @Provides
     @FragmentScope
-    ContactListInteractor provideContactListInteractor(DataRepository dataRepository, ImportService importService){
+    ContactListInteractor provideContactListInteractor(DataRepository dataRepository, 
+                                                        ImportService importService){
         return new ContactListInteractorDefault(dataRepository, importService);
     }
 
     @Provides
     @FragmentScope
-    ContactListContract.Presenter provideContactListPresenter(ContactListInteractor contactListInteractor, Settings settings, CompositeDisposable compositeDisposable){
+    ContactListContract.Presenter provideContactListPresenter(ContactListInteractor contactListInteractor, 
+                                                                Settings settings, 
+                                                                CompositeDisposable compositeDisposable){
         return new ContactListPresenter(contactListInteractor, settings, compositeDisposable);
     }
 }

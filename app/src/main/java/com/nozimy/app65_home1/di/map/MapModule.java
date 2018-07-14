@@ -17,7 +17,8 @@ public class MapModule {
 
     @Provides
     @FragmentScope
-    MapInteractor provideMapInteractor(DataRepository dataRepository, GeocodeApiClient geocodeApiClient){
+    MapInteractor provideMapInteractor(DataRepository dataRepository, 
+                                        GeocodeApiClient geocodeApiClient){
         return new MapInteractorDefault(dataRepository, geocodeApiClient);
     }
 

@@ -14,10 +14,10 @@ import io.reactivex.Single;
 public interface ContactListInteractor extends BaseInteractor {
 
     @NonNull
-    Single<List<ContactEntity>> getContacts();
+    Single<List<Contact>> getContacts();
     @NonNull
-    Single<List<ContactEntity>> getByDisplayName(String searchText);
+    Single<List<Contact>> getByDisplayName(String searchText);
 
     Completable importFromProvider();
-
+    
 }

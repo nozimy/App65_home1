@@ -12,7 +12,10 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {AppModule.class, DatabaseModule.class, RepositoryModule.class, NetworkModule.class})
+@Component(modules = {AppModule.class, 
+                        DatabaseModule.class, 
+                        RepositoryModule.class, 
+                        NetworkModule.class})
 public interface AppComponent {
 
     ContactListComponent plusContactListComponent(ImportServiceModule importServiceModule);

@@ -22,7 +22,8 @@ public class ContactModule {
 
     @Provides
     @FragmentScope
-    ContactDetailsContract.Presenter provideContactPresenter(ContactInteractor contactInteractor, CompositeDisposable compositeDisposable){
+    ContactDetailsContract.Presenter provideContactPresenter(ContactInteractor contactInteractor, 
+                                                                CompositeDisposable compositeDisposable){
         return new ContactPresenter(contactInteractor, compositeDisposable);
     }
 

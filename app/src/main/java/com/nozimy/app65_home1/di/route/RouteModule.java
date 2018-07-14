@@ -16,7 +16,8 @@ public class RouteModule {
 
     @Provides
     @FragmentScope
-    RouteInteractor provideRouteInteractor(RouteApiClient routeApiClient, DataRepository dataRepository){
+    RouteInteractor provideRouteInteractor(RouteApiClient routeApiClient, 
+                                            DataRepository dataRepository){
         return new RouteInteractorуDefault(routeApiClient, dataRepository);
     }
 

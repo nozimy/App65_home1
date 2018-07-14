@@ -28,7 +28,7 @@ public class RouteInteractorуDefault implements RouteInteractor {
 
     @NonNull
     @Override
-    public Maybe<ContactEntity> getContact(String contactId) {
+    public Maybe<Contact> getContact(String contactId) {
         return Maybe.defer(() -> dataRepository.getContact(contactId));
     }
 }

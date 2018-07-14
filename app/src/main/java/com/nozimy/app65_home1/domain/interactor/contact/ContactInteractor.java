@@ -16,10 +16,10 @@ import io.reactivex.Single;
 public interface ContactInteractor extends BaseInteractor{
 
     @NonNull
-    Maybe<ContactEntity> getContact(String contactId);
+    Maybe<Contact> getContact(String contactId);
     @NonNull
-    Maybe<List<PhoneEntity>> getPhones(String contactId);
+    Maybe<List<Phone>> getPhones(String contactId);
     @NonNull
-    Maybe<List<EmailEntity>> getEmails(String contactId);
+    Maybe<List<Email>> getEmails(String contactId);
 
 }
